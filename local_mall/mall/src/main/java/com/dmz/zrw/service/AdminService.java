@@ -3,6 +3,8 @@ package com.dmz.zrw.service;
 import com.dmz.zrw.model.Admin;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
+import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
+import com.dmz.zrw.model.bo.UpdatePwdBo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,4 +22,9 @@ public interface AdminService {
     Admin showAdmin(Integer id);
 
     boolean updeteAdminss(Admin admin);
+
+    List<Admin> multiconditionalQuery( MulticonditionalQueryBo multiconditionalQueryBo);
+
+    Integer changePwd(UpdatePwdBo updatePwdBo);
+
 }

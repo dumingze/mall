@@ -3,6 +3,8 @@ package com.dmz.zrw.controller;
 import com.dmz.zrw.model.Admin;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
+import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
+import com.dmz.zrw.model.bo.UpdatePwdBo;
 import com.dmz.zrw.model.vo.AdminLoginVO;
 import com.dmz.zrw.model.Result;
 import com.dmz.zrw.service.AdminService;
@@ -41,7 +43,7 @@ public class AdminServlet extends HttpServlet {
                 response.getWriter().print(gson.toJson(Result.ok("添加成功")));
             }
             else {
-                response.getWriter().print(gson.toJson(Result.error("添加失败")));
+                response.getWriter().print(gson.toJson(Result.error("用户名已被使用")));
             }
 
         }
@@ -55,8 +57,74 @@ public class AdminServlet extends HttpServlet {
                response.getWriter().print(gson.toJson(Result.error("修改失败")));
            }
         }
+        else if ("getSearchAdmins".equals(replace)){
+        List<Admin>multiconditionalQueryBoss =   multiconditionalQuery(request,response);
+
+        response.getWriter().print(gson.toJson(Result.ok(multiconditionalQueryBoss)));
+        }
+        else if ("changePwd".equals(replace)){
+            String gsonSting= null;
+            try {
+                gsonSting = MyStreamUtils.getInputStreamToString(request);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            UpdatePwdBo updatePwdBo = gson.fromJson(gsonSting, UpdatePwdBo.class);
+
+            System.out.println(updatePwdBo.toString());
+            if (!(updatePwdBo.getNewPwd()).equals(updatePwdBo.getConfirmPwd() )  ){
+
+                try {
+                    response.getWriter().print(gson.toJson(Result.error("您两次输入的密码不相同")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return ;
+            }
+
+            int wrongcode=changePwd(request,response,updatePwdBo);
+            if (wrongcode==1){
+                response.getWriter().print(gson.toJson(Result.ok()));
+                System.out.println(gson.toJson(Result.ok()));
+            }
+            else if (wrongcode==2){
+                response.getWriter().print(gson.toJson(Result.error("旧密码错误")));
+                System.out.println(Result.error("旧密码错误"));
+            }
+            else {
+                response.getWriter().print(gson.toJson(Result.error("修改失败")));
+                System.out.println(gson.toJson(Result.error("修改失败")));
+            }
+        }
 
 
+    }
+
+    private int  changePwd(HttpServletRequest request, HttpServletResponse response,UpdatePwdBo updatePwdBo) {
+
+
+        return  adminService.changePwd(updatePwdBo);
+    }
+
+    private List<Admin> multiconditionalQuery(HttpServletRequest request, HttpServletResponse response) {
+
+        String gsonSting= null;
+        try {
+            gsonSting = MyStreamUtils.getInputStreamToString(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        MulticonditionalQueryBo multiconditionalQueryBo = gson.fromJson(gsonSting, MulticonditionalQueryBo.class);
+        if (StringUtils.isEmpty(multiconditionalQueryBo.getEmail())&&StringUtils.isEmpty(multiconditionalQueryBo.getNickname())){
+            try {
+                response.getWriter().print(gson.toJson(Result.error("您输入为空")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }else {
+        return   adminService.multiconditionalQuery(multiconditionalQueryBo);}
     }
 
     private boolean updateAdminss(HttpServletRequest request, HttpServletResponse response) {

@@ -5,6 +5,8 @@ import com.dmz.zrw.dao.AdminDaoImpl;
 import com.dmz.zrw.model.Admin;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
+import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
+import com.dmz.zrw.model.bo.UpdatePwdBo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,5 +47,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean updeteAdminss(Admin admin) {
         return  adminDao.updeteAdminss(admin);
+    }
+
+    @Override
+    public List<Admin> multiconditionalQuery( MulticonditionalQueryBo multiconditionalQueryBo) {
+        return adminDao.multiconditionalQuery(multiconditionalQueryBo);
+    }
+
+    @Override
+    public Integer changePwd(UpdatePwdBo updatePwdBo) {
+        return adminDao.changePwd(updatePwdBo);
     }
 }

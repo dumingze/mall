@@ -4,7 +4,11 @@ package com.dmz.zrw.dao;
 import com.dmz.zrw.model.Admin;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
+import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
+import com.dmz.zrw.model.bo.UpdatePwdBo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface AdminDao {
@@ -19,6 +23,11 @@ public interface AdminDao {
     Admin showAdmins(Integer id);
 
     boolean updeteAdminss(Admin admin);
+
+    List<Admin> multiconditionalQuery( MulticonditionalQueryBo multiconditionalQueryBo);
+
+    Integer changePwd(UpdatePwdBo updatePwdBo);
+
 
     //List<Admin> allAdmins();
 }
