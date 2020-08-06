@@ -3,6 +3,7 @@ package com.dmz.zrw.service;
 import com.dmz.zrw.dao.AdminDao;
 import com.dmz.zrw.dao.AdminDaoImpl;
 import com.dmz.zrw.model.Admin;
+import com.dmz.zrw.model.User;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
 import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
@@ -58,4 +59,5 @@ public class AdminServiceImpl implements AdminService {
     public Integer changePwd(UpdatePwdBo updatePwdBo) {
         return adminDao.changePwd(updatePwdBo);
     }
+
 }

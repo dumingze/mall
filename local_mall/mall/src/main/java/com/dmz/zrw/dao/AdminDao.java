@@ -2,6 +2,7 @@ package com.dmz.zrw.dao;
 
 
 import com.dmz.zrw.model.Admin;
+import com.dmz.zrw.model.User;
 import com.dmz.zrw.model.bo.AdminAddBo;
 import com.dmz.zrw.model.bo.AdminLoginBo;
 import com.dmz.zrw.model.bo.MulticonditionalQueryBo;
@@ -27,6 +28,8 @@ public interface AdminDao {
     List<Admin> multiconditionalQuery( MulticonditionalQueryBo multiconditionalQueryBo);
 
     Integer changePwd(UpdatePwdBo updatePwdBo);
+
+
 
 
     //List<Admin> allAdmins();

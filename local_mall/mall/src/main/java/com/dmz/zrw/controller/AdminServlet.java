@@ -41,26 +41,32 @@ public class AdminServlet extends HttpServlet {
             boolean isAdded = addAdminss(request, response);
             if (isAdded){
                 response.getWriter().print(gson.toJson(Result.ok("添加成功")));
+                return;
             }
             else {
                 response.getWriter().print(gson.toJson(Result.error("用户名已被使用")));
+                return;
             }
 
         }
         else if ("updateAdminss".equals(replace)){
            boolean isupdateAdminss= updateAdminss(request,response);
 
+
            if (isupdateAdminss){
                response.getWriter().print(gson.toJson(Result.ok()));
+               return;
            }
            else {
                response.getWriter().print(gson.toJson(Result.error("修改失败")));
+               return;
            }
         }
         else if ("getSearchAdmins".equals(replace)){
         List<Admin>multiconditionalQueryBoss =   multiconditionalQuery(request,response);
 
         response.getWriter().print(gson.toJson(Result.ok(multiconditionalQueryBoss)));
+        return;
         }
         else if ("changePwd".equals(replace)){
             String gsonSting= null;
@@ -76,6 +82,7 @@ public class AdminServlet extends HttpServlet {
 
                 try {
                     response.getWriter().print(gson.toJson(Result.error("您两次输入的密码不相同")));
+                    return;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -89,11 +96,13 @@ public class AdminServlet extends HttpServlet {
             }
             else if (wrongcode==2){
                 response.getWriter().print(gson.toJson(Result.error("旧密码错误")));
-                System.out.println(Result.error("旧密码错误"));
+                return;
+
             }
             else {
                 response.getWriter().print(gson.toJson(Result.error("修改失败")));
                 System.out.println(gson.toJson(Result.error("修改失败")));
+                return;
             }
         }
 
@@ -188,10 +197,12 @@ public class AdminServlet extends HttpServlet {
             if (admins.size()>=1){
                 Result ok = Result.ok(admins);
                 response.getWriter().print(gson.toJson(ok));
+                return;
             }
             else {
                 Result error = Result.error("无用户选择");
                 response.getWriter().print(gson.toJson(error));
+                return;
             }
         }
 
@@ -201,9 +212,11 @@ public class AdminServlet extends HttpServlet {
 
             if (isDelect){
                 response.getWriter().print(gson.toJson(Result.ok("删除成功")));
+                return;
             }
             else {
                 response.getWriter().print(gson.toJson(Result.error("删除失败")));
+                return;
             }
         }
        else if ("getAdminsInfo".equals(replace)){
@@ -212,9 +225,11 @@ public class AdminServlet extends HttpServlet {
 
           if (admin!=null){
               response.getWriter().print(gson.toJson(Result.ok(admin)));
+              return;
           }
           else {
               response.getWriter().print(gson.toJson(Result.error("查询失败")));
+              return;
           }
         }
 
