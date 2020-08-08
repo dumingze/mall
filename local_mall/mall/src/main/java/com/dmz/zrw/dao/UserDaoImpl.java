@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class UserDaoImpl implements UserDao {
-    QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+   // QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
     @Override
     public List<User> showUsers() {
-
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
         List<User> userList=null;
         try {
            userList= queryRunner.query("SELECT * FROM  user;",new BeanListHandler<User>(User.class));
@@ -24,6 +24,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean deleteUser(int id) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
         Integer integer=null;
       // queryRunner.
         try {
@@ -37,6 +38,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> searchUser(String word)   {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
         List<User> users=null;
         String sql="%"+word+"%";
         try {

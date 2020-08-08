@@ -48,6 +48,7 @@ public class AdminDaoImpl implements AdminDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return admins;
 
     }

@@ -55,23 +55,25 @@ public class FileUploadUtils {
     }
 
     private static void processUploadedFile(FileItem fileItem, Map<String, Object> params, HttpServletRequest request) {
-        String fieldName = fileItem.getFieldName();
-        String fileName = fileItem.getName();
-        String s = UUID.randomUUID().toString();
+        String fieldName = fileItem.getFieldName();//<input type=file name="">得到这个标签的name属性
+        String fileName = fileItem.getName();//上传文件的名字
+        String s = UUID.randomUUID().toString();//对文件名字加前缀，使其变得独立
         fileName = s + "-" + fileName;
         System.out.println("file:" + fieldName);
         System.out.println("file:" + fileName);
         //取hashcode
-        int hashCode = fileName.hashCode();
-        String hexString = Integer.toHexString(hashCode);
+        int hashCode = fileName.hashCode();//对文件名进行hash操作
+        String hexString = Integer.toHexString(hashCode);//将32位int 变成8位的字符串（2进制转16进制）
         char[] chars = hexString.toCharArray();
-        String uploadPath = "upload";
+        String uploadPath ="upload";
         for (char aChar : chars) {
             uploadPath = uploadPath + "/" + aChar;
         }
         String relativePath = uploadPath + "/" +  fileName;
-        String realPath = request.getServletContext().getRealPath(relativePath);
-        //   http://localhost/app/upload/1.jpg
+        //request.getServletContext().getRealPath("")定位到部署的根目录里面去
+        String realPath = request.getServletContext().getRealPath(relativePath);//定位到部署的根目录里面去的relative目录下去
+        System.out.println(realPath);
+
         File file = new File(realPath);
         if(!file.getParentFile().exists()){
             file.getParentFile().mkdirs();
