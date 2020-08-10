@@ -1,6 +1,8 @@
 package com.dmz.zrw.dao;
 
 import com.dmz.zrw.model.User;
+import com.dmz.zrw.model.bo.LoginMallUserBo;
+import com.dmz.zrw.model.vo.LoginUserVo;
 import com.dmz.zrw.utils.DruidUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -47,6 +49,28 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         return users;
+    }
+
+    @Override
+    public LoginUserVo signup(LoginMallUserBo loginMallUserBo) {
+        LoginUserVo loginUserVo=new LoginUserVo();
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer sign=null;
+        try {
+            sign=queryRunner.update("insert into user values (null,?,?,?,?,?,?)",
+                    loginMallUserBo.getEmail(),loginMallUserBo.getNickname(),
+                    loginMallUserBo.getPwd(),loginMallUserBo.getRecipient(),
+                    loginMallUserBo.getAddress(),loginMallUserBo.getPhone());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (sign==1){
+            loginUserVo.setName(loginMallUserBo.getNickname());
+            loginUserVo.setToken(loginMallUserBo.getNickname());
+
+        }
+        return loginUserVo;
+
     }
 
 }

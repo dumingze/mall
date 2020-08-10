@@ -3,7 +3,7 @@ package com.dmz.zrw.model;
 public class Goods {
     Integer id;
     String name;
-    String typeId;
+    Integer typeId;
     String img;
     String desc;
     Integer stockNum;
@@ -25,11 +25,11 @@ public class Goods {
         this.name = name;
     }
 
-    public String getTypeId() {
+    public Integer getTypeId() {
         return typeId;
     }
 
-    public void setTypeId(String typeId) {
+    public void setTypeId(Integer typeId) {
         this.typeId = typeId;
     }
 
@@ -65,7 +65,17 @@ public class Goods {
         this.price = price;
     }
 
-    public Goods(String name, String typeId, String img, String desc, Integer stockNum, Double price) {
+    public Goods(String name, Integer typeId, String img, String desc, Integer stockNum, Double price) {
+        this.name = name;
+        this.typeId = typeId;
+        this.img = img;
+        this.desc = desc;
+        this.stockNum = stockNum;
+        this.price = price;
+    }
+
+    public Goods(Integer id, String name, Integer typeId, String img, String desc, Integer stockNum, Double price) {
+        this.id = id;
         this.name = name;
         this.typeId = typeId;
         this.img = img;

@@ -47,4 +47,14 @@ public class Spec {
                 ", price=" + price +
                 '}';
     }
+
+    public Spec(Integer id, String name, Integer stockNum, Double price) {
+        this.id = id;
+        this.name = name;
+        this.stockNum = stockNum;
+        this.price = price;
+    }
+
+    public Spec() {
+    }
 }

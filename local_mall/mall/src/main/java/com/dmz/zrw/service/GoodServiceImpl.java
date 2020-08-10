@@ -4,9 +4,8 @@ import com.dmz.zrw.dao.GoodsDao;
 import com.dmz.zrw.dao.GoodsDapImpl;
 import com.dmz.zrw.model.Goods;
 import com.dmz.zrw.model.GoodsType;
-import com.dmz.zrw.model.bo.AddGoodsBO;
-import com.dmz.zrw.model.bo.AddSpecBO;
-import com.dmz.zrw.model.bo.AddTypeBo;
+import com.dmz.zrw.model.bo.*;
+import com.dmz.zrw.model.vo.GetGoodsInfoVo;
 
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class GoodServiceImpl implements GoodsService {
         }*/
         String preaddress="http://localhost:8084/";
         String imageUlr=preaddress+addGoodsBO.getImg();
-        Goods goods=new Goods(addGoodsBO.getName(),addGoodsBO.getTypeId(),imageUlr,addGoodsBO.getDesc(),stockNum,price);
+        Goods goods=new Goods(addGoodsBO.getName(),Integer.parseInt(addGoodsBO.getTypeId()),imageUlr,addGoodsBO.getDesc(),stockNum,price);
 
         boolean isaddToFormGoods=goodsDao.addToFormGoods(goods);
 
@@ -74,6 +73,11 @@ public class GoodServiceImpl implements GoodsService {
     }
 
     @Override
+    public List<Goods> showAllGoodsList() {
+        return goodsDao.showAllGoodsList();
+    }
+
+    @Override
     public boolean deleteGoods(Integer id) {
         boolean deleteFromGoods=goodsDao.deleteFromGoods(id);
 
@@ -87,5 +91,55 @@ public class GoodServiceImpl implements GoodsService {
        else {
            return false;
        }
+    }
+
+    @Override
+    public GetGoodsInfoVo getGoodsInfo(Integer id) {
+        return goodsDao.getGoodsInfoVo(id);
+    }
+
+    @Override
+    public boolean updateGoods(UpdateGoodsBo updateGoodsBo) {
+        List<UpdateGoodsSpecBo> specBOList=updateGoodsBo.getSpecBos();
+
+        Integer stockNum=0;
+
+        Double price=Double.MAX_VALUE;
+
+        for (UpdateGoodsSpecBo specBO:specBOList) {
+            if (specBO.getStockNum()>stockNum){
+                stockNum=specBO.getStockNum();
+            }
+            if (price>specBO.getUnitPrice()){
+                price=specBO.getUnitPrice();
+            }
+
+        }
+
+        String preaddress="http://localhost:8084/";
+        String imageUlr=preaddress+updateGoodsBo.getImg();
+        Goods goods=new Goods(Integer.parseInt(updateGoodsBo.getId()),updateGoodsBo.getName(),updateGoodsBo.getTypeId(),imageUlr,updateGoodsBo.getDesc(),stockNum,price);
+
+        boolean isUpdateGoodsInGoods = goodsDao.updateGoodsInGoods(goods);
+
+        boolean isUpdateGoodsInSpec = goodsDao.updateGoodsInSpec(specBOList,Integer.parseInt(updateGoodsBo.getId()));
+
+        if (isUpdateGoodsInGoods&&isUpdateGoodsInSpec){
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean addSpec(UpdateNomalSpecBo updateNomalSpecBo) {
+        return goodsDao.addSpec(updateNomalSpecBo);
+    }
+
+    @Override
+    public boolean DeleteSpec(DeleteSpecBo deleteSpecBo) {
+        return goodsDao.DeleteSpec(deleteSpecBo);
     }
 }
