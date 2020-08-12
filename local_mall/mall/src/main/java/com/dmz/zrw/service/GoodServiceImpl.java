@@ -2,16 +2,19 @@ package com.dmz.zrw.service;
 
 import com.dmz.zrw.dao.GoodsDao;
 import com.dmz.zrw.dao.GoodsDapImpl;
-import com.dmz.zrw.model.Goods;
-import com.dmz.zrw.model.GoodsType;
+import com.dmz.zrw.dao.OrderDao;
+import com.dmz.zrw.dao.OrderDaoImpl;
+import com.dmz.zrw.model.*;
 import com.dmz.zrw.model.bo.*;
-import com.dmz.zrw.model.vo.GetGoodsInfoVo;
+import com.dmz.zrw.model.vo.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class GoodServiceImpl implements GoodsService {
 
     GoodsDao goodsDao=new GoodsDapImpl();
+    OrderDao orderDao=new OrderDaoImpl();
     @Override
     public List<GoodsType> getGoodsType() {
         return goodsDao.getType() ;
@@ -141,5 +144,91 @@ public class GoodServiceImpl implements GoodsService {
     @Override
     public boolean DeleteSpec(DeleteSpecBo deleteSpecBo) {
         return goodsDao.DeleteSpec(deleteSpecBo);
+    }
+
+    @Override
+    public boolean askGoodsMsgBo(AskGoodsMsgBo askGoodsMsgBo) {
+        //复用orderDao 里面的方法
+        String nickname =askGoodsMsgBo.getToken();
+        Integer goodsId = askGoodsMsgBo.getGoodsId();
+        String msg = askGoodsMsgBo.getMsg();
+        User user = orderDao.searchUserInfomation(nickname);
+        Goods goods = orderDao.searchgoodInformatin(goodsId);
+
+
+      /*  Integer id;
+        Integer userId;
+        String username;
+        Integer goodId;
+        String goodsname;
+        Integer state;// 1表示未回复，0表示回复了
+        String questcontent;
+
+        Date createtime;
+        Date replytime;*/
+
+    /*  List<MsgStateBo> msgStateBoList=goodsDao.getListStateAndTime(goodsId,nickname);
+        System.out.println(msgStateBoList);*/
+
+        MallMsg mallMsg=new MallMsg();
+        mallMsg.setUserId(user.getId());
+        mallMsg.setUsername(user.getNickname());
+        mallMsg.setGoodId(goods.getId());
+        mallMsg.setGoodsname(goods.getName());
+
+        mallMsg.setQuestcontent(msg);
+      boolean isAskGoodsMsgBo = goodsDao.askGoodsMsgBo(mallMsg);
+        return  isAskGoodsMsgBo;
+    }
+
+    @Override
+    public List<NoReplyMsgVo> noReplyMsg() {
+        return goodsDao.noReplyMsg();
+    }
+
+    @Override
+    public Boolean reply(ReplyBo replyBo) {
+        return goodsDao.reply(replyBo);
+    }
+
+    @Override
+    public List<RepliedMsgVo> repliedMsg() {
+        return goodsDao.repliedMsg();
+    }
+
+    @Override
+    public List<GetGoodsMsgVo> getGoodsMsg(Integer id) {
+        return goodsDao.getGoodsMsg(id);
+    }
+
+    @Override
+    public List<GetGoodsCommentVo> getGoodsComment(Integer goodsId) {
+        List<Comment> commentList =goodsDao.getCommentListByGoodsId(goodsId);
+        System.out.println(commentList);
+        List<GetGoodsCommentVo> commentVoList=new LinkedList<>();
+        for (Comment comment:commentList) {
+            GetGoodsCommentVo commentVo =new GetGoodsCommentVo();
+            GetGoodsCommentUserVo userVo=new GetGoodsCommentUserVo(comment.getNickname());
+            commentVo.setUser(userVo);
+            commentVo.setScore(comment.getScore());
+            commentVo.setId(comment.getId());
+            commentVo.setSpecName(comment.getSpecName());
+            commentVo.setComment(comment.getContent());
+            commentVo.setTime(comment.getTime());
+            commentVo.setUserId(comment.getUserId());
+            commentVoList.add(commentVo);
+
+        }
+        return commentVoList;
+    }
+
+    @Override
+    public Double getGoodsCommentRate(Integer goodsId) {
+        return goodsDao.getGoodsCommentRate(goodsId);
+    }
+
+    @Override
+    public List<SearchGoodsVo> searchGoods(String keyword) {
+        return goodsDao.searchGoods(keyword);
     }
 }

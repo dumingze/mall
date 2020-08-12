@@ -3,7 +3,7 @@ package com.dmz.zrw.service;
 import com.dmz.zrw.model.Goods;
 import com.dmz.zrw.model.GoodsType;
 import com.dmz.zrw.model.bo.*;
-import com.dmz.zrw.model.vo.GetGoodsInfoVo;
+import com.dmz.zrw.model.vo.*;
 
 import java.util.List;
 
@@ -28,4 +28,19 @@ public interface GoodsService {
     boolean DeleteSpec(DeleteSpecBo deleteSpecBo);
 
 
+    boolean askGoodsMsgBo(AskGoodsMsgBo askGoodsMsgBo);
+
+    List<NoReplyMsgVo> noReplyMsg();
+
+    Boolean reply(ReplyBo replyBo);
+
+    List<RepliedMsgVo> repliedMsg();
+
+    List<GetGoodsMsgVo> getGoodsMsg(Integer id);
+
+    List<GetGoodsCommentVo> getGoodsComment(Integer goodsId);
+
+    Double getGoodsCommentRate(Integer goodsId);
+
+    List<SearchGoodsVo> searchGoods(String keyword);
 }

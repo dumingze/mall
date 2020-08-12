@@ -2,7 +2,6 @@ package com.dmz.zrw.model.vo;
 
 public class SpecVo {
     Integer id;
-    String name;
     String specName;
     Integer stockNum;
     Double unitPrice;
@@ -23,13 +22,6 @@ public class SpecVo {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getSpecName() {
         return specName;
@@ -51,7 +43,6 @@ public class SpecVo {
     public String toString() {
         return "SpecVo{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", specName='" + specName + '\'' +
                 ", stockNum=" + stockNum +
                 ", unitPrice=" + unitPrice +

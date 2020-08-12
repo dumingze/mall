@@ -5,6 +5,15 @@ public class Spec {
     String name;
     Integer stockNum;
     Double price;
+    Integer goodId;
+
+    public Integer getGoodId() {
+        return goodId;
+    }
+
+    public void setGoodId(Integer goodId) {
+        this.goodId = goodId;
+    }
 
     public Integer getId() {
         return id;
@@ -45,6 +54,7 @@ public class Spec {
                 ", name='" + name + '\'' +
                 ", stockNum=" + stockNum +
                 ", price=" + price +
+                ", goodId=" + goodId +
                 '}';
     }
 
@@ -53,6 +63,14 @@ public class Spec {
         this.name = name;
         this.stockNum = stockNum;
         this.price = price;
+    }
+
+    public Spec(Integer id, String name, Integer stockNum, Double price, Integer goodId) {
+        this.id = id;
+        this.name = name;
+        this.stockNum = stockNum;
+        this.price = price;
+        this.goodId = goodId;
     }
 
     public Spec() {

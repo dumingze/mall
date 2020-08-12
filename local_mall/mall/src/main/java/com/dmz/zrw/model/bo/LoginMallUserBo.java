@@ -1,38 +1,9 @@
 package com.dmz.zrw.model.bo;
 
-//命名错了。这是个注册用的
 public class LoginMallUserBo {
-   String address;
-
     String email;
-    String nickname;
 
-    String phone;
-
-   String pwd;
-
-   String recipient;
-
-
-    public LoginMallUserBo() {
-    }
-
-    public LoginMallUserBo(String address, String email, String nickname, String phone, String pwd, String recipient) {
-        this.address = address;
-        this.email = email;
-        this.nickname = nickname;
-        this.phone = phone;
-        this.pwd = pwd;
-        this.recipient = recipient;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    String pwd;
 
     public String getEmail() {
         return email;
@@ -40,22 +11,6 @@ public class LoginMallUserBo {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String getPwd() {
@@ -66,23 +21,14 @@ public class LoginMallUserBo {
         this.pwd = pwd;
     }
 
-    public String getRecipient() {
-        return recipient;
-    }
+    //response :{"code":0,"data":{"code":0,"name":"dumingze","token":"dumingze"}}
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
-    }
 
     @Override
     public String toString() {
         return "LoginMallUserBo{" +
-                "address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", phone='" + phone + '\'' +
+                "email='" + email + '\'' +
                 ", pwd='" + pwd + '\'' +
-                ", recipient='" + recipient + '\'' +
                 '}';
     }
 }

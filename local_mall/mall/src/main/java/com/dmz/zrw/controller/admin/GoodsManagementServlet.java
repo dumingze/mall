@@ -5,6 +5,8 @@ import com.dmz.zrw.model.GoodsType;
 import com.dmz.zrw.model.Result;
 import com.dmz.zrw.model.bo.*;
 import com.dmz.zrw.model.vo.GetGoodsInfoVo;
+import com.dmz.zrw.model.vo.NoReplyMsgVo;
+import com.dmz.zrw.model.vo.RepliedMsgVo;
 import com.dmz.zrw.service.GoodServiceImpl;
 import com.dmz.zrw.service.GoodsService;
 import com.dmz.zrw.utils.FileUploadUtils;
@@ -103,6 +105,32 @@ public class GoodsManagementServlet extends HttpServlet {
                return;
            }
         }
+       //留言回复
+       else if ("reply".equals(replace)){
+
+           Boolean isReply =reply(request,response);
+           if (isReply){
+               response.getWriter().print(gson.toJson(Result.ok()));
+               return;
+           }
+           else {
+               response.getWriter().print(gson.toJson(Result.error("添加回复失败")));
+               return;
+           }
+        }
+
+    }
+
+    private Boolean reply(HttpServletRequest request, HttpServletResponse response) {
+        String string=null;
+        try {
+            string= MyStreamUtils.getInputStreamToString(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ReplyBo replyBo = gson.fromJson(string, ReplyBo.class);
+
+       return goodsService.reply(replyBo);
 
     }
 
@@ -221,7 +249,41 @@ public class GoodsManagementServlet extends HttpServlet {
             response.getWriter().print(gson.toJson(Result.ok(goodsInfoVo)));
             return;
         }
+        //留言管理
+        else if ("noReplyMsg".equals(replace)){
 
+
+         List<NoReplyMsgVo> noReplyMsgVoList=  noReplyMsg();
+         if (noReplyMsgVoList!=null){
+             response.getWriter().print(gson.toJson(Result.ok(noReplyMsgVoList)));
+             return;
+         }
+         else {
+             response.getWriter().print(gson.toJson(Result.error("无数据")));
+         }
+        }
+        else if ("repliedMsg".equals(replace)){
+
+            List<RepliedMsgVo> repliedMsgVoList=repliedMsg();
+            if (repliedMsgVoList!=null){
+                response.getWriter().print(gson.toJson(Result.ok(repliedMsgVoList)));
+                return;
+            }
+            else {
+                response.getWriter().print(gson.toJson(Result.error("获取失败")));
+                return;
+            }
+        }
+
+    }
+
+    private List<RepliedMsgVo> repliedMsg() {
+
+        return  goodsService.repliedMsg();
+    }
+
+    private List<NoReplyMsgVo> noReplyMsg() {
+      return   goodsService.noReplyMsg();
     }
 
     private boolean deleteGoods(HttpServletRequest request, HttpServletResponse response) {

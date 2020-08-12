@@ -40,6 +40,16 @@ public class Orders {
 
     private Date updatetime;
 
+    Boolean hasComment;
+
+    public Boolean getHasComment() {
+        return hasComment;
+    }
+
+    public void setHasComment(Boolean hasComment) {
+        this.hasComment = hasComment;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -187,6 +197,7 @@ public class Orders {
                 ", stateId=" + stateId +
                 ", createtime=" + createtime +
                 ", updatetime=" + updatetime +
+                ", hasComment=" + hasComment +
                 '}';
     }
 
@@ -210,6 +221,22 @@ public class Orders {
         this.stateId = stateId;
         this.createtime = createtime;
         this.updatetime = updatetime;
+    }
+
+    public Orders(Integer userId, String nickname, String name, String address, String phone, String goods, Integer goodsId, String spec, Integer goodsDetailId, Double price, Integer goodsNum, Double amount, Integer stateId) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.goods = goods;
+        this.goodsId = goodsId;
+        this.spec = spec;
+        this.goodsDetailId = goodsDetailId;
+        this.price = price;
+        this.goodsNum = goodsNum;
+        this.amount = amount;
+        this.stateId = stateId;
     }
 
     @Override

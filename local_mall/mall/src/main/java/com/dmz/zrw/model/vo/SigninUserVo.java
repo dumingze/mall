@@ -1,7 +1,7 @@
 package com.dmz.zrw.model.vo;
 
 //命名错了，这个是注册用的
-public class LoginUserVo {
+public class SigninUserVo {
     String name;
     String token;
 
@@ -21,11 +21,11 @@ public class LoginUserVo {
         this.token = token;
     }
 
-    public LoginUserVo(String name, String token) {
+    public SigninUserVo(String name, String token) {
         this.name = name;
         this.token = token;
     }
 
-    public LoginUserVo() {
+    public SigninUserVo() {
     }
 }

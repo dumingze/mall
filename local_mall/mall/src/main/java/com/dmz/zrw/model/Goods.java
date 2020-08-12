@@ -8,6 +8,7 @@ public class Goods {
     String desc;
     Integer stockNum;
     Double price;
+   
 
     public Integer getId() {
         return id;

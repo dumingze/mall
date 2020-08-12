@@ -1,9 +1,11 @@
 package com.dmz.zrw.dao;
 
+import com.dmz.zrw.model.Comment;
 import com.dmz.zrw.model.Goods;
 import com.dmz.zrw.model.GoodsType;
+import com.dmz.zrw.model.MallMsg;
 import com.dmz.zrw.model.bo.*;
-import com.dmz.zrw.model.vo.GetGoodsInfoVo;
+import com.dmz.zrw.model.vo.*;
 
 import java.util.List;
 
@@ -37,4 +39,21 @@ public interface GoodsDao {
     boolean DeleteSpec(DeleteSpecBo deleteSpecBo);
 
 
+    List<MsgStateBo> getListStateAndTime(Integer goodsId, String nickname);
+
+    boolean askGoodsMsgBo(MallMsg mallMsg);
+
+    List<NoReplyMsgVo> noReplyMsg();
+
+    Boolean reply(ReplyBo replyBo);
+
+    List<RepliedMsgVo> repliedMsg();
+
+    List<GetGoodsMsgVo> getGoodsMsg(Integer id);
+
+    List<Comment> getCommentListByGoodsId(Integer goodsId);
+
+    Double getGoodsCommentRate(Integer goodsId);
+
+    List<SearchGoodsVo> searchGoods(String keyword);
 }

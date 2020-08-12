@@ -30,24 +30,24 @@ public class MallFilter implements Filter {
         response.setHeader("Access-Control-Allow-Headers","x-requested-with,Authorization,Content-Type");
         response.setHeader("Access-Control-Allow-Credentials","true");
 
-      /*  if(!request.getMethod().equalsIgnoreCase("OPTIONS")){
+        if(!request.getMethod().equalsIgnoreCase("OPTIONS")){
             //不对options请求做任何判断，因为options请求不会携带cookie
             if(auth(request)){
                 //需要验证权限
                 String username = (String) request.getSession().getAttribute("username");
                 if(username == null){
-                    response.getWriter().println(new Gson().toJson(Result.error("当前接口需要登录才可以访问")));
+                    response.getWriter().println(new Gson().toJson(Result.error("需要登录才可以进行下一步操作")));
                     return;
                 }
             }
-        }*/
+        }
         chain.doFilter(req, resp);
     }
     private boolean auth(HttpServletRequest request) {
-        if("/api/mall/user/login".equalsIgnoreCase(request.getRequestURI()) || "/api/mall/user/signup".equalsIgnoreCase(request.getRequestURI())){
-            return false;
+        if("/api/mall/order/getOrderByState".equalsIgnoreCase(request.getRequestURI()) ||"/api/mall/order/addOrder".equalsIgnoreCase(request.getRequestURI())||"/api/mall/goods/askGoodsMsg".equalsIgnoreCase(request.getRequestURI())|| "/api/mall/user/data".equalsIgnoreCase(request.getRequestURI())){
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void init(FilterConfig config) throws ServletException {

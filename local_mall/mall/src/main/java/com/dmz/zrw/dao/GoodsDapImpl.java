@@ -1,12 +1,8 @@
 package com.dmz.zrw.dao;
 
-import com.dmz.zrw.model.Goods;
-import com.dmz.zrw.model.GoodsType;
-import com.dmz.zrw.model.Spec;
+import com.dmz.zrw.model.*;
 import com.dmz.zrw.model.bo.*;
-import com.dmz.zrw.model.vo.GetGoodsInfoVo;
-import com.dmz.zrw.model.vo.GoodsVo;
-import com.dmz.zrw.model.vo.SpecVo;
+import com.dmz.zrw.model.vo.*;
 import com.dmz.zrw.utils.DruidUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -15,7 +11,12 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+
+import static java.time.LocalDate.now;
 
 public class GoodsDapImpl implements GoodsDao {
     @Override
@@ -275,6 +276,167 @@ public class GoodsDapImpl implements GoodsDao {
         }
 
         return isDeleteSpec==1?true:false;
+    }
+
+    @Override
+    public List<MsgStateBo> getListStateAndTime(Integer goodsId, String nickname) {
+        QueryRunner runner=new QueryRunner(DruidUtils.getDataSource());
+        List<MsgStateBo> msgStateBoList=null;
+        try {
+            msgStateBoList=  runner.query("select stateId,createtime from orders where goodsId = ? and  nickname = ? ",new BeanListHandler<MsgStateBo>(MsgStateBo.class),goodsId,nickname);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return msgStateBoList;
+    }
+
+    @Override
+    public boolean askGoodsMsgBo(MallMsg mallMsg) {
+        SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer isAskGoodsMsgBo=null;
+        try {
+            isAskGoodsMsgBo=queryRunner.update("insert into mallmsg values ( null,?,?,?,1,?,null,?,?,null)",mallMsg.getUserId(),mallMsg.getGoodId(),mallMsg.getQuestcontent(),simpleDateFormat.format(new Date(System.currentTimeMillis())),mallMsg.getUsername(),mallMsg.getGoodsname());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isAskGoodsMsgBo==1?true:false;
+    }
+
+    @Override
+    public List<NoReplyMsgVo> noReplyMsg() {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        List<MallMsg> mallMsgList=null;
+        try {
+            mallMsgList=queryRunner.query("select * from mallmsg where state = 1 ",new BeanListHandler<MallMsg>(MallMsg.class));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<NoReplyMsgVo > list=new LinkedList<>();
+        for (MallMsg mallMsg:mallMsgList) {
+            NoReplyMsgVo noReplyMsgVo=new NoReplyMsgVo();
+            noReplyMsgVo.setId(mallMsg.getId());
+            noReplyMsgVo.setUserId(mallMsg.getUserId());
+            noReplyMsgVo.setGoodsId(mallMsg.getGoodId());
+            noReplyMsgVo.setContent(mallMsg.getQuestcontent());
+            noReplyMsgVo.setState(mallMsg.getState());
+            noReplyMsgVo.setCreatetime(mallMsg.getCreatetime());
+            noReplyMsgVo.setGoods(new NoReplyMsgVoGoods(mallMsg.getGoodsname()));
+            noReplyMsgVo.setUser(new NoReplyMsgVouser(mallMsg.getUsername()));
+
+            list.add(noReplyMsgVo);
+        }
+        return list;
+    }
+
+    @Override
+    public Boolean reply(ReplyBo replyBo) {
+        SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer integer=null;
+        try {
+            integer=queryRunner.update("update mallmsg set state = 0 , replycontent = ? ,replytime = ?  where id = ? ",replyBo.getContent(),simpleDateFormat.format(new Date(System.currentTimeMillis())),replyBo.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return integer==1?true:false;
+    }
+
+    @Override
+    public List<RepliedMsgVo> repliedMsg() {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        List<MallMsg> mallMsgList=null;
+        try {
+            mallMsgList=queryRunner.query("select * from mallmsg where state = 0 ",new BeanListHandler<MallMsg>(MallMsg.class));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<RepliedMsgVo > list=new LinkedList<>();
+        for (MallMsg mallMsg:mallMsgList) {
+            RepliedMsgVo repliedMsgVo=new RepliedMsgVo();
+            repliedMsgVo.setId(mallMsg.getId());
+            repliedMsgVo.setUserId(mallMsg.getUserId());
+            repliedMsgVo.setGoodsId(mallMsg.getGoodId());
+            repliedMsgVo.setContent(mallMsg.getQuestcontent());
+            repliedMsgVo.setState(mallMsg.getState());
+            repliedMsgVo.setCreatetime(mallMsg.getCreatetime());
+            repliedMsgVo.setReplyContent(mallMsg.getReplycontent());
+            repliedMsgVo.setGoods(new RepliedMsgVoGoods(mallMsg.getGoodsname()));
+            repliedMsgVo.setUser(new RepliedMsgVouser(mallMsg.getUsername()));
+
+            list.add(repliedMsgVo);
+        }
+        return list;
+    }
+
+    @Override
+    public List<GetGoodsMsgVo> getGoodsMsg(Integer id) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        List<MallMsg> mallMsgList=null;
+        try {
+            mallMsgList=queryRunner.query("select * from mallmsg where goodId = ? ",new BeanListHandler<MallMsg>(MallMsg.class),id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<GetGoodsMsgVo> getGoodsMsgVoList=new LinkedList<>();
+        for (MallMsg mallMsg:mallMsgList) {
+            GetGoodsMsgVo getGoodsMsgVo=new GetGoodsMsgVo();
+            getGoodsMsgVo.setId(mallMsg.getId());
+            getGoodsMsgVo.setContent(mallMsg.getQuestcontent());
+            getGoodsMsgVo.setAsker(mallMsg.getUsername());
+            getGoodsMsgVo.setTime(mallMsg.getCreatetime());
+
+            GetGoodsMsgVoReplyVo getGoodsMsgVoReplyVo=new GetGoodsMsgVoReplyVo(mallMsg.getReplycontent(),mallMsg.getReplytime());
+
+            getGoodsMsgVo.setReply(getGoodsMsgVoReplyVo);
+
+            getGoodsMsgVoList.add(getGoodsMsgVo);
+        }
+        return getGoodsMsgVoList;
+
+    }
+
+    @Override
+    public List<Comment> getCommentListByGoodsId(Integer goodsId) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        List<Comment> commentList=null;
+        try {
+            commentList=queryRunner.query("select * from comment where goodsId = ? ",new BeanListHandler<Comment>(Comment.class),goodsId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return commentList;
+    }
+
+    @Override
+    public Double getGoodsCommentRate(Integer goodsId) {
+
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+       Double rate=null;
+        try {
+            rate=(Double) queryRunner.query("select AVG(score) from comment where goodsId = ? ",new ScalarHandler(),goodsId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rate;
+
+    }
+
+    @Override
+    public List<SearchGoodsVo> searchGoods(String keyword) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        List<SearchGoodsVo> searchGoodsVoList=null;
+        String name="%"+keyword+"%";
+        try {
+            searchGoodsVoList=queryRunner.query(" select id , name , img, price ,typeId from goods where name like ?",new BeanListHandler<SearchGoodsVo>(SearchGoodsVo.class),name);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(searchGoodsVoList);
+        return searchGoodsVoList;
     }
 
 

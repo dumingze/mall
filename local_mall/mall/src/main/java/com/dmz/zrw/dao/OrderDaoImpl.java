@@ -1,13 +1,10 @@
 package com.dmz.zrw.dao;
 
-import com.dmz.zrw.model.CurSpec;
-import com.dmz.zrw.model.CurState;
-import com.dmz.zrw.model.Orders;
+import com.dmz.zrw.model.*;
 import com.dmz.zrw.model.bo.ChangeOrderBo;
 import com.dmz.zrw.model.bo.OrdersByPageBo;
 import com.dmz.zrw.model.bo.SpecBo;
-import com.dmz.zrw.model.vo.InspectOrderVo;
-import com.dmz.zrw.model.vo.OrdersByPageVo;
+import com.dmz.zrw.model.vo.*;
 import com.dmz.zrw.utils.DruidUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -16,10 +13,8 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class OrderDaoImpl implements OrderDao {
     @Override
@@ -170,6 +165,185 @@ public class OrderDaoImpl implements OrderDao {
             e.printStackTrace();
         }
         return changeOrderResult==1?true:false;
+    }
+
+    @Override
+    public User searchUserInfomation(String nickname) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        User user=null;
+        try {
+            user= queryRunner.query("select * from user where nickname = ? ", new BeanHandler<User>(User.class), nickname);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @Override
+    public Spec searchSpecInformatin(Integer specId)  {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Spec spec=null;
+        try {
+            spec=queryRunner.query("select * from spec where id = ? ",new BeanHandler<Spec>(Spec.class),specId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return spec;
+    }
+
+    @Override
+    public Goods searchgoodInformatin(Integer goodId) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Goods goods=null;
+
+        try {
+            goods=queryRunner.query("select * from goods where id = ? ",new BeanHandler<Goods>(Goods.class),goodId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return goods;
+    }
+
+    @Override
+    public boolean addOrder(Orders orders) {
+
+        SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer isAddOrder=null;
+        try {
+            isAddOrder=queryRunner.update("insert into orders values (null, ?,? ,? ,? ,? ,?  , ?, ?, ?,? ,?, ?, ?,? ,null ,false )",
+                orders.getUserId(),orders.getNickname(),orders.getName(),orders.getAddress(),orders.getPhone(),
+                    orders.getGoods(),orders.getGoodsId(),orders.getSpec(),orders.getGoodsDetailId(),
+                    orders.getPrice(),orders.getGoodsNum(),orders.getAmount(),orders.getStateId(),simpleDateFormat.format(new Date(System.currentTimeMillis())));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(isAddOrder);
+        return isAddOrder==1?true:false;
+    }
+
+    @Override
+    public List<GetOrderByStateVo> getOrderByState(Integer state, String nickname) {
+        QueryRunner runner=new QueryRunner(DruidUtils.getDataSource());
+        List<Orders> ordersList=null;
+        List<GetOrderByStateVo> getOrderByStateVoList=new LinkedList<>();
+        //System.out.println(state);
+        if (state!=-1) {
+            try {
+                ordersList = runner.query("select * from orders where stateId =  ? and nickname = ? ",new BeanListHandler<Orders>(Orders.class),state,nickname);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                ordersList =runner.query("select * from orders where nickname = ? ",new BeanListHandler<Orders>(Orders.class),nickname);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //0->flase
+       // System.out.println(ordersList);
+
+        for (Orders orders:ordersList) {
+            Integer goodId=orders.getGoodsId();
+            System.out.println("goodId"+goodId);
+            GetOrderByStateVo getOrderByStateVo =new GetOrderByStateVo();
+            GetOrderByStateVogoodsVo goods=new GetOrderByStateVogoodsVo();
+            ImageAdddressVo imgAddress=null;
+            try {
+                 imgAddress = runner.query("select img from goods where id = ? ", new BeanHandler<ImageAdddressVo>(ImageAdddressVo.class), goodId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            getOrderByStateVo.setId(orders.getId());
+            getOrderByStateVo.setState(orders.getStateId());
+            getOrderByStateVo.setGoodsNum(orders.getGoodsNum());
+            getOrderByStateVo.setAmount(orders.getAmount());
+            getOrderByStateVo.setGoodsDetailId(orders.getGoodsDetailId());
+            getOrderByStateVo.setCreatetime(orders.getCreatetime());
+            getOrderByStateVo.setHasComment(orders.getHasComment());
+
+            goods.setId(orders.getGoodsId());
+            goods.setImg(imgAddress.getImg());
+            goods.setName(orders.getGoods());
+            goods.setGoodsDetailId(orders.getGoodsDetailId());
+            goods.setSpec(orders.getSpec());
+            goods.setUnitPrice(orders.getPrice());
+
+            getOrderByStateVo.setGoods(goods);
+
+            getOrderByStateVoList.add(getOrderByStateVo);
+
+        }
+        return getOrderByStateVoList;
+    }
+
+    @Override
+    public boolean pay(Integer id)  {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+       Integer isPay=null;
+        try {
+            isPay=queryRunner.update("update orders set stateId = 1 where id = ? ",id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isPay==1?true:false;
+    }
+
+    @Override
+    public boolean confirmReceive(Integer id) {
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer isConfirmReceive=null;
+        try {
+            isConfirmReceive=queryRunner.update("update orders set stateId = 3 where id = ? ",id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isConfirmReceive==1?true:false;
+
+    }
+
+    @Override
+    public Orders getOrderByOrderId(Integer orderId) {
+        QueryRunner queryRunner= new QueryRunner(DruidUtils.getDataSource());
+        Orders order=null;
+        try {
+            order=queryRunner.query("select * from orders where id = ? ",new BeanHandler<Orders>(Orders.class),orderId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return  order;
+    }
+
+    @Override
+    public boolean insertIntoComment(Comment comment) {
+        SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        QueryRunner queryRunner=new QueryRunner(DruidUtils.getDataSource());
+        Integer isInsertIntoComment=null;
+        try {
+            isInsertIntoComment=queryRunner.update("insert into comment values (null,?,?,?,?,?,?,?,?,? ) ",
+                    comment.getOrderId(),comment.getGoodsId(),comment.getGoodsDetailId(),comment.getSpecName(),
+                    comment.getNickname(),comment.getContent(),comment.getScore(),comment.getUserId(),
+                    simpleDateFormat.format(new Date(System.currentTimeMillis())));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isInsertIntoComment==1?true:false;
+    }
+
+    @Override
+    public boolean changeHasCommentInOrders(Integer orderId) {
+        QueryRunner queryRunner= new QueryRunner(DruidUtils.getDataSource());
+        Integer isChangeHasCommentInOrders=null;
+        try {
+            isChangeHasCommentInOrders=queryRunner.update("update orders set hasComment = 1 where id = ?  ",orderId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return  isChangeHasCommentInOrders==1?true:false;
     }
 
 }
